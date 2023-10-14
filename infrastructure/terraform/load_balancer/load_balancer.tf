@@ -17,3 +17,20 @@ resource "aws_lb" "bcit" {
     Name = "bcit-alb"
   }
 }
+
+resource "aws_lb_listener" "ec2-alb-https-listener" {
+  load_balancer_arn = aws_lb.bcit.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-0-2021-06"
+  certificate_arn   = aws_acm_certificate.backend.arn
+
+  default_action {
+    type             = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      status_code  = "200"
+      message_body = "OK"
+    }
+  }
+}
